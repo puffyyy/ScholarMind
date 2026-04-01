@@ -8,11 +8,29 @@
 **ScholarMind** is a next-generation, AI-driven personal research intelligence center designed for macOS. It helps researchers automate the process of tracking, reading, and incubating ideas by leveraging advanced AI models (Gemini, Claude, Codex).
 
 ## ✨ Key Features
-- **Daily Insight Report**: Automatically syncs papers from Scholar Inbox and generates a summarized daily research briefing.
-- **Multi-Dimensional Knowledge Graph**: Navigate your research library through an interactive map of categories, technical tags, and experimental datasets.
+
+### 1. Research Dashboard
+A next-generation AI-driven research portal for quick access to core functions.
+![Dashboard](./assets/dashboard.png)
+
+### 2. Daily Insight Report
+Automatically syncs papers from Scholar Inbox and generates a summarized daily research briefing on the latest trends.
+![Daily Report](./assets/daily_report.png)
+
+### 3. Multi-Dimensional Knowledge Graph
+Navigate your research library through an interactive map of categories, technical tags, and experimental datasets.
+![Knowledge Graph](./assets/knowledge_graph.png)
+
+### 4. Inspiration Lab
+A dedicated space for incubating research ideas, featuring AI brainstorming and integration with your Chrome browsing history to help generate new insights.
+![Research Lab](./assets/lab.png)
+
+### 5. Blog & Web Capture
+Import and summarize technical blogs or web pages as structured research notes.
+![Blog Notes](./assets/blogs.png)
+
+### 📚 Other Features
 - **Immersive AI Reader**: Read PDFs alongside AI-generated summaries and engage in deep-dive chats with your papers.
-- **Blog & Web Capture**: Import and summarize technical blogs or web pages as structured research notes.
-- **Inspiration Lab**: A dedicated space for incubating research ideas, featuring AI brainstorming and integration with your Chrome browsing history.
 
 ## 🚀 Getting Started
 

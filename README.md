@@ -8,11 +8,29 @@
 **ScholarMind** 是专为 macOS 设计的下一代 AI 驱动个人科研情报中心。它通过整合先进的 AI 模型（Gemini, Claude, Codex），帮助科研工作者自动化追踪、阅读并孵化科研灵感。
 
 ## ✨ 核心特性
-- **科研洞察日报**: 自动同步 Scholar Inbox 论文，并生成今日研究趋势的 AI 摘要日报。
-- **多维知识图谱**: 通过领域大类、技术标签和实验数据集，以交互式图谱管理你的文献库。
+
+### 1. 灵感主控台 (Dashboard)
+下一代 AI 驱动的科研入口，快速访问各项核心功能。
+![Dashboard](./assets/dashboard.png)
+
+### 2. 科研洞察日报 (Daily Report)
+自动同步 Scholar Inbox 论文，并生成今日研究趋势的 AI 摘要日报。
+![Daily Report](./assets/daily_report.png)
+
+### 3. 多维知识图谱 (Knowledge Graph)
+通过领域大类、技术标签和实验数据集，以交互式图谱管理你的文献库。
+![Knowledge Graph](./assets/knowledge_graph.png)
+
+### 4. 灵感实验室 (Research Lab)
+专门的灵感孵化空间，支持 AI 对话启发，并可同步 Chrome 浏览足迹以辅助 Idea 生成。
+![Research Lab](./assets/lab.png)
+
+### 5. 博闻笔记 (Blog Notes)
+支持抓取并总结技术博客或网页，将其转化为结构化的科研笔记。
+![Blog Notes](./assets/blogs.png)
+
+### 📚 其他特性
 - **沉浸式 AI 阅读**: 在阅读 PDF 原文的同时查看 AI 深度分析，并能针对论文内容进行追问对话。
-- **博闻笔记**: 支持抓取并总结技术博客或网页，将其转化为结构化的科研笔记。
-- **灵感实验室**: 专门的灵感孵化空间，支持 AI 对话启发，并可同步 Chrome 浏览足迹以辅助 Idea 生成。
 
 ## 🚀 快速上手
 
