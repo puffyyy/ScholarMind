@@ -8,6 +8,47 @@ from datetime import datetime
 import time
 import re
 import shutil
+from deepseek_http import call_deepseek_chat
+
+
+def _parse_summary_and_meta(full_text, paper_title, force_date=None):
+    default_meta = {
+        "actual_title": paper_title,
+        "category": "未分类",
+        "tags": [],
+        "datasets": [],
+        "extracted_date": force_date if force_date else "",
+    }
+
+    marker_match = re.search(r'JSON_START(.*?)JSON_END', full_text, re.DOTALL)
+    if marker_match:
+        try:
+            meta = json.loads(marker_match.group(1).strip())
+            summary = full_text.replace(marker_match.group(0), "").strip()
+            return (summary if summary else full_text.strip()), meta
+        except Exception:
+            pass
+
+    fenced_match = re.search(r'```json\s*(\{.*?\})\s*```', full_text, re.DOTALL)
+    if fenced_match:
+        try:
+            meta = json.loads(fenced_match.group(1).strip())
+            summary = full_text.replace(fenced_match.group(0), "").strip()
+            return (summary if summary else full_text.strip()), meta
+        except Exception:
+            pass
+
+    for m in re.finditer(r'\{.*?\}', full_text, re.DOTALL):
+        try:
+            obj = json.loads(m.group(0).strip())
+            if isinstance(obj, dict) and "actual_title" in obj:
+                summary = full_text.replace(m.group(0), "").strip()
+                return (summary if summary else full_text.strip()), obj
+        except Exception:
+            continue
+
+    print("DEBUG: 模型输出未包含可解析元数据，已使用兜底元数据。")
+    return full_text.strip(), default_meta
 
 def extract_text_from_pdf(pdf_path, max_pages=15):
     text = ""
@@ -94,6 +135,23 @@ def summarize_and_tag_paper(paper_title, text, storage_root, engine="Gemini", pr
     JSON_END
     正文：{clean_text}
     """
+
+    if engine.lower() == "deepseek":
+        for attempt in range(3):
+            try:
+                full = call_deepseek_chat(prompt, timeout=240)
+                summary, meta = _parse_summary_and_meta(full, paper_title, force_date)
+                return summary, meta
+            except Exception as e:
+                err = str(e)
+                if "SILICONFLOW_AUTH_ERROR" in err:
+                    print("PROGRESS: ❌ DeepSeek API Key 缺失或无效，请设置 SILICONFLOW_API_KEY 或 AI_API_KEY。")
+                    return None, None
+                print(f"DEBUG: DeepSeek HTTP 调用失败: {err}")
+                if attempt == 2:
+                    return None, None
+                time.sleep(5)
+        return None, None
     
     env = os.environ.copy()
     cli_base_path = os.getenv("AI_CLI_PATH", "/usr/local/bin")
@@ -140,13 +198,10 @@ def summarize_and_tag_paper(paper_title, text, storage_root, engine="Gemini", pr
             if "Opening authentication page" in result.stdout or "Opening authentication page" in result.stderr:
                 print(f"PROGRESS: ❌ AI 引擎未登录。请在终端运行 '{bin_name} login' 或检查 API 配置。")
                 return None, None
-                
+
             full = result.stdout
-            json_match = re.search(r'JSON_START(.*?)JSON_END', full, re.DOTALL)
-            if json_match:
-                meta = json.loads(json_match.group(1).strip())
-                summary = full.replace(f"JSON_START{json_match.group(1)}JSON_END", "").strip()
-                return summary, meta
+            summary, meta = _parse_summary_and_meta(full, paper_title, force_date)
+            return summary, meta
         except subprocess.CalledProcessError as e:
             print(f"DEBUG: AI 分析命令失败 (Exit {e.returncode})")
             if e.stderr: print(f"DEBUG: 错误详情: {e.stderr.strip()}")
@@ -210,6 +265,21 @@ def update_daily_report(storage_root, date_str, engine="Gemini"):
     背景信息（论文摘要）：
     {full_context}
     """
+
+    if engine.lower() == "deepseek":
+        try:
+            report_text = call_deepseek_chat(prompt, timeout=300)
+            if report_text:
+                with open(os.path.join(date_dir, "Daily_Overall_Summary.md"), "w", encoding="utf-8") as f:
+                    f.write(report_text)
+            return
+        except Exception as e:
+            err = str(e)
+            if "SILICONFLOW_AUTH_ERROR" in err:
+                print("PROGRESS: ❌ DeepSeek API Key 缺失或无效，请设置 SILICONFLOW_API_KEY 或 AI_API_KEY。")
+                return
+            print(f"DEBUG: DeepSeek 日报生成失败: {err}")
+            return
     
     env = os.environ.copy()
     cli_base_path = os.getenv("AI_CLI_PATH", "/usr/local/bin")
